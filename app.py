@@ -1,32 +1,40 @@
 import streamlit as st
+import pandas as pd
+
+# Load reference data
+catalog_df = pd.read_csv("EveryProductNumber.csv")
+catalog_df.columns = catalog_df.columns.str.strip()
+catalog_lookup = dict(zip(catalog_df["Catalog Number"], catalog_df["Product Name"]))
+
+# Import decoders
 from decoder_nonilluminated import decode_non_illuminated_pushpull
 from decoder_illuminated_incandescent import decode_illuminated_pushpull_incandescent
 
+# Streamlit UI
 st.set_page_config(page_title="10250T Decoder", layout="centered")
 st.title("🔍 10250T Product Decoder")
 
-# Product type selector
-product_type = st.selectbox(
-    "Select Product Type",
-    ["Non-Illuminated Push-Pull", "Illuminated Push-Pull (Incandescent)"]
-)
-
-# Catalog number input
 part_number = st.text_input("Enter Catalog Number", placeholder="e.g., 10250T10B63-1")
 
-# Decode based on selected product type
 if part_number:
-    if product_type == "Non-Illuminated Push-Pull":
-        result = decode_non_illuminated_pushpull(part_number)
-    elif product_type == "Illuminated Push-Pull (Incandescent)":
-        result = decode_illuminated_pushpull_incandescent(part_number)
-    else:
-        result = {"error": "Unsupported product type"}
+    part_number = part_number.strip()
+    product_type = catalog_lookup.get(part_number)
 
-    # Display results
-    if "error" in result:
-        st.error(result["error"])
+    if not product_type:
+        st.error("Catalog number not found in reference list.")
     else:
-        st.subheader("Decoded Components")
-        for key, value in result.items():
-            st.markdown(f"**{key}**: {value}")
+        # Route to appropriate decoder
+        if product_type.lower().startswith("non-illuminated push-pull"):
+            result = decode_non_illuminated_pushpull(part_number)
+        elif product_type.lower().startswith("incandescent push-pull"):
+            result = decode_illuminated_pushpull_incandescent(part_number)
+        else:
+            result = {"error": f"Decoder for product type '{product_type}' is not implemented yet."}
+
+        # Display results
+        if "error" in result:
+            st.error(result["error"])
+        else:
+            st.subheader("Decoded Components")
+            for key, value in result.items():
+                st.markdown(f"**{key}**: {value}")
