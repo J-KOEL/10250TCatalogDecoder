@@ -46,7 +46,7 @@ if part_number:
             labels = {
                 "Operator Description": "🔧 Operator Function",
                 "Operator Catalog": "📘 Operator Catalog Number",
-                "Light Unit Description": "💡 Voltage Type",
+                "Light Unit Description": "💡 Light Unit Voltage",
                 "Light Unit Catalog": "📘 Light Unit Catalog Number",
                 "Lens Description": "🎨 Button Color & Size",
                 "Lens Catalog": "📘 Lens Catalog Number",
