@@ -10,7 +10,7 @@ catalog_lookup = dict(zip(catalog_df["Catalog Number"], catalog_df["Product Name
 from decoder_nonilluminated import decode_non_illuminated_pushpull
 from decoder_illuminated_incandescent import decode_illuminated_pushpull_incandescent
 
-# UI Setup
+# Streamlit UI
 st.set_page_config(page_title="10250T Decoder", layout="centered")
 st.title("🔍 10250T Catalog Decoder")
 st.markdown("Enter a catalog number to see what each part means and how it breaks down.")
@@ -42,17 +42,18 @@ if part_number:
             st.divider()
             st.markdown("### 🧩 Catalog Breakdown")
 
-            # Friendly labels
+            # Friendly labels and icons
             labels = {
                 "Operator Description": "🔧 Operator Function",
+                "Operator Catalog": "📘 Operator Catalog Number",
                 "Light Unit Description": "💡 Voltage Type",
+                "Light Unit Catalog": "📘 Light Unit Catalog Number",
                 "Lens Description": "🎨 Button Color & Size",
-                "Circuit Description": "🔌 Circuit Configuration"
+                "Lens Catalog": "📘 Lens Catalog Number",
+                "Circuit Description": "🔌 Circuit Configuration",
+                "Circuit Catalog": "📘 Circuit Catalog Number"
             }
 
             for key, value in result.items():
-                if "Description" in key:
-                    label = labels.get(key, key)
-                    st.markdown(f"**{label}**: {value}")
-                elif "Catalog" in key:
-                    continue  # Hide raw catalog codes unless needed
+                if key in labels:
+                    st.markdown(f"**{labels[key]}**: {value}")
