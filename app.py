@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-# Load reference data
+# Load catalog reference
 catalog_df = pd.read_csv("EveryProductNumber.csv")
 catalog_df.columns = catalog_df.columns.str.strip()
 catalog_lookup = dict(zip(catalog_df["Catalog Number"], catalog_df["Product Name"]))
@@ -23,10 +23,11 @@ if part_number:
     if not product_type:
         st.error("Catalog number not found in reference list.")
     else:
-        # Route to appropriate decoder
-        if product_type.lower().startswith("non-illuminated push-pull"):
+        # Route to appropriate decoder based on product name
+        product_type_lower = product_type.lower()
+        if "non-illuminated push-pull" in product_type_lower:
             result = decode_non_illuminated_pushpull(part_number)
-        elif product_type.lower().startswith("incandescent push-pull"):
+        elif "incandescent push-pull" in product_type_lower:
             result = decode_illuminated_pushpull_incandescent(part_number)
         else:
             result = {"error": f"Decoder for product type '{product_type}' is not implemented yet."}
@@ -38,3 +39,4 @@ if part_number:
             st.subheader("Decoded Components")
             for key, value in result.items():
                 st.markdown(f"**{key}**: {value}")
+
