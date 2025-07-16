@@ -1,15 +1,15 @@
-
 import streamlit as st
-from decoder import decode_catalog_number
-st.set_page_config(page_title="10250T Decoder", layout="centered")
+from decoder_nonilluminated import decode_non_illuminated_pushpull
 
 st.title("🔍 10250T Product Decoder")
-st.markdown("Enter a catalog number to decode its product line.")
 
-# Input field
-part_number = st.text_input("Catalog Number", placeholder="e.g., 10250T589C47-1")
+part_number = st.text_input("Enter Catalog Number", placeholder="e.g., 10250T10B63-1")
 
-# Decode and display result
 if part_number:
-    result = decode_catalog_number(part_number)
-    st.success(f"**Decoded Product:** {result}")
+    result = decode_non_illuminated_pushpull(part_number)
+    if "error" in result:
+        st.error(result["error"])
+    else:
+        st.subheader("Decoded Components")
+        for key, value in result.items():
+            st.write(f"**{key}**: {value}")
