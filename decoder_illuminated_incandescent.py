@@ -34,8 +34,19 @@ def decode_illuminated_pushpull_incandescent(part_number):
     if not operator_code:
         return {"error": "Unknown operator code"}
 
-    lens_code = base[len(operator_code):len(operator_code)+3]
-    light_unit_code = base[len(operator_code)+3:]
+    # Identify lens code from known list
+    lens_code = None
+    for code in known_lens_codes:
+        if base.startswith(code):
+            lens_code = code
+            break
+
+    # Identify lens code from known list
+    light_unit_code = None
+    for code in known_light_unit_codes:
+        if base.startswith(code):
+            light_unit_code = code
+            break
 
     return {
         "Catalog Number": part_number,
