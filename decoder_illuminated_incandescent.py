@@ -12,6 +12,9 @@ light_unit_lookup = dict(zip(light_unit_df["Code"].astype(str), light_unit_df["L
 operator_lookup = dict(zip(operator_df["Code"].astype(str), operator_df["Label"]))
 product_lookup = dict(zip(catalog_df["Catalog Number"], catalog_df["Product Name"]))
 
+# Sort operator codes by length (longest first) to match correctly
+known_operator_codes = sorted(operator_lookup.keys(), key=lambda x: -len(x))
+
 def decode_illuminated_pushpull_incandescent(part_number):
     if not part_number.startswith("10250T"):
         return {"error": "Invalid catalog number prefix"}
@@ -21,9 +24,18 @@ def decode_illuminated_pushpull_incandescent(part_number):
     if "-" in base:
         base, variant = base.split("-")
 
-    operator_code = base[:3]
-    lens_code = base[3:6]
-    light_unit_code = base[6:]
+    # Identify operator code from known list
+    operator_code = None
+    for code in known_operator_codes:
+        if base.startswith(code):
+            operator_code = code
+            break
+
+    if not operator_code:
+        return {"error": "Unknown operator code"}
+
+    lens_code = base[len(operator_code):len(operator_code)+3]
+    light_unit_code = base[len(operator_code)+3:]
 
     return {
         "Catalog Number": part_number,
